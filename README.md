@@ -1,4 +1,3 @@
-# university-erp-web
 # University ERP Web
 
 University ERP Web is a modern, modular, and scalable web application for managing university operations. Built with React, Refine, and Radix UI, it provides a robust foundation for ERP features such as student management, course administration, and more.
