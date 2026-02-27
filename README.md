@@ -15,11 +15,12 @@ University ERP Web is a modern, modular, and scalable web application for managi
 ## Tech Stack
 
 - [React 19](https://react.dev/)
-- [Refine Framework](https://refine.dev/)
-- [Radix UI](https://www.radix-ui.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
 - [Vite](https://vitejs.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
 - [TypeScript](https://www.typescriptlang.org/)
+- [Radix UI](https://www.radix-ui.com/)
+- [Refine Framework](https://refine.dev/)
+- [tweakcn](https://tweakcn.com/)
 
 ## Getting Started
 
@@ -31,30 +32,33 @@ University ERP Web is a modern, modular, and scalable web application for managi
 ### Installation
 
 1. Clone the repository:
-	```bash
-	git clone <repo-url>
-	cd university-erp-web
-	```
+   ```bash
+   git clone <repo-url>
+   cd university-erp-web
+   ```
 2. Install dependencies:
-	```bash
-	npm install
-	# or
-	yarn install
-	```
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
 
 ### Development
 
 Start the development server:
+
 ```bash
 npm run dev
 # or
 yarn dev
 ```
+
 The app will be available at [http://localhost:5173](http://localhost:5173) by default.
 
 ### Build
 
 To build for production:
+
 ```bash
 npm run build
 # or

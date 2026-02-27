@@ -1,47 +1,46 @@
-import {
-  BaseRecord,
-  DataProvider,
-  GetListParams,
-  GetListResponse,
-} from "@refinedev/core";
-import { MOCK_SUBJECTS } from "../constants/mock-data";
+import { API_URL } from "@/constants";
+import { ListResponse } from "@/types";
+import { createDataProvider, CreateDataProviderOptions } from "@refinedev/rest";
 
-export const dataProvider: DataProvider = {
-  getList: async <TData extends BaseRecord = BaseRecord>({
-    resource,
-  }: GetListParams): Promise<GetListResponse<TData>> => {
-    if (resource !== "subjects") {
-      return {
-        data: [] as TData[],
-        total: 0,
-      };
-    }
+if (!API_URL) {
+  throw new Error("API_URL is not defined in the environment variables.");
+}
 
-    return {
-      data: MOCK_SUBJECTS as unknown as TData[],
-      total: MOCK_SUBJECTS.length,
-    };
-  },
+const options: CreateDataProviderOptions = {
+  getList: {
+    getEndpoint: ({ resource }) => resource,
 
-  getOne: async () => {
-    throw new Error("This function is not implemented yet.");
-  },
-  create: async () => {
-    throw new Error("This function is not implemented yet.");
-  },
-  update: async () => {
-    throw new Error("This function is not implemented yet.");
-  },
-  deleteOne: async () => {
-    throw new Error("This function is not implemented yet.");
-  },
+    buildQueryParams: async ({ resource, pagination, filters }) => {
+      const page = pagination?.currentPage ?? 1;
+      const pageSize = pagination?.pageSize ?? 10;
 
-  getApiUrl: () => "",
+      const params: Record<string, string | number> = { page, limit: pageSize };
+
+      filters?.forEach((filter) => {
+        const field = "field" in filter ? filter.field : "";
+        const value = String(filter.value);
+
+        if (resource === "subjects") {
+          if (field === "department") params.departmentName = value;
+          if (field === "name" || field === "code") params.search = value;
+        }
+      });
+
+      return params;
+    },
+
+    mapResponse: async (response) => {
+      const payload: ListResponse = await response.clone().json();
+      return payload.data || [];
+    },
+
+    getTotalCount: async (response) => {
+      const payload: ListResponse = await response.clone().json();
+      return payload.pagination?.total ?? payload.data?.length ?? 0;
+    },
+  },
 };
 
+const { dataProvider } = createDataProvider(API_URL, options);
 
-// import { createSimpleRestDataProvider } from "@refinedev/rest/simple-rest";
-// import { API_URL } from "./constants";
-// export const { dataProvider, kyInstance } = createSimpleRestDataProvider({
-//   apiURL: API_URL,
-// });
+export { dataProvider };
