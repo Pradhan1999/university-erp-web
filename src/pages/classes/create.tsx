@@ -27,16 +27,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import UploadWidget from "@/components/upload-widget";
+import { useList } from "@refinedev/core";
+import { Subject, User } from "@/types";
 
-const teachers = [
-  { id: "john", name: "John Doe" },
-  { id: "jane", name: "Jane Smith" },
-];
+// const teachers = [
+//   { id: "john", name: "John Doe" },
+//   { id: "jane", name: "Jane Smith" },
+// ];
 
-const subjects = [
-  { id: 1, name: "Biology", code: "BIO101" },
-  { id: 2, name: "Chemistry", code: "CHEM101" },
-];
+// const subjects = [
+//   { id: 1, name: "Biology", code: "BIO101" },
+//   { id: 2, name: "Chemistry", code: "CHEM101" },
+// ];
 
 const ClassesCreate = () => {
   const form = useForm({
@@ -50,8 +52,6 @@ const ClassesCreate = () => {
     },
   });
 
-  const bannerPublicId = form.watch("bannerCldPubId");
-
   const {
     refineCore: { onFinish },
     handleSubmit,
@@ -59,14 +59,46 @@ const ClassesCreate = () => {
     control,
   } = form;
 
+  const bannerPublicId = form.watch("bannerCldPubId");
+
   const onSubmit = async (values: z.infer<typeof classSchema>) => {
     try {
-      await onFinish(values);
       console.log("values:>>", values);
+      await onFinish(values);
     } catch (error) {
       console.error("Error creating class:", error);
     }
   };
+
+  // Fetch subjects list
+  const { query: subjectsQuery } = useList<Subject>({
+    resource: "subjects",
+    pagination: {
+      pageSize: 100,
+    },
+  });
+
+  // Fetch teachers list
+  const { query: teachersQuery } = useList<User>({
+    resource: "users",
+    filters: [
+      {
+        field: "role",
+        operator: "eq",
+        value: "teacher",
+      },
+    ],
+    pagination: {
+      pageSize: 100,
+    },
+  });
+
+  const teachers = teachersQuery.data?.data || [];
+  const teachersLoading = teachersQuery.isLoading;
+
+  const subjects = subjectsQuery.data?.data || [];
+  const subjectsLoading = subjectsQuery.isLoading;
+
   return (
     <PageLayout
       title="Create a Class"
@@ -165,8 +197,7 @@ const ClassesCreate = () => {
                             field.onChange(Number(value))
                           }
                           value={field.value?.toString() ?? ""}
-                          // disabled={subjectsLoading}
-                        >
+                          disabled={subjectsLoading}>
                           <FormControl>
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="Select a subject" />
@@ -198,8 +229,7 @@ const ClassesCreate = () => {
                         <Select
                           onValueChange={field.onChange}
                           value={field.value?.toString() ?? ""}
-                          // disabled={teachersLoading}
-                        >
+                          disabled={teachersLoading}>
                           <FormControl>
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="Select a teacher" />
