@@ -20,6 +20,12 @@ const options: CreateDataProviderOptions = {
           if (field === "department") params.departmentName = value;
           if (field === "name" || field === "code") params.search = value;
         }
+
+        if (resource === "classes") {
+          if (field === "name") params.search = value;
+          if (field === "subject") params.subjectName = value;
+          if (field === "teacher") params.teacherName = value;
+        }
       });
 
       return params;

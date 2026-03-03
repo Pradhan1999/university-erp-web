@@ -42,7 +42,6 @@ const SubjectCreate = () => {
   const onSubmit = async (values: z.infer<typeof subjectSchema>) => {
     try {
       await onFinish(values);
-      console.log("values:>>", values);
     } catch (error) {
       console.error("Error creating class:", error);
     }

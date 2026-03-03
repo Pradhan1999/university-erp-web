@@ -63,7 +63,6 @@ const ClassesCreate = () => {
 
   const onSubmit = async (values: z.infer<typeof classSchema>) => {
     try {
-      console.log("values:>>", values);
       await onFinish(values);
     } catch (error) {
       console.error("Error creating class:", error);
