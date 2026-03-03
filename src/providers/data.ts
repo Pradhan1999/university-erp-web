@@ -2,10 +2,6 @@ import { API_URL } from "@/constants";
 import { ListResponse } from "@/types";
 import { createDataProvider, CreateDataProviderOptions } from "@refinedev/rest";
 
-if (!API_URL) {
-  throw new Error("API_URL is not defined in the environment variables.");
-}
-
 const options: CreateDataProviderOptions = {
   getList: {
     getEndpoint: ({ resource }) => resource,

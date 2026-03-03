@@ -5,17 +5,13 @@ import routerProvider, {
   DocumentTitleHandler,
   UnsavedChangesNotifier,
 } from "@refinedev/react-router";
-import { BrowserRouter, Outlet, Route, Routes } from "react-router";
+import { BrowserRouter } from "react-router";
 import "./App.css";
 import { Toaster } from "./components/refine-ui/notification/toaster";
 import { useNotificationProvider } from "./components/refine-ui/notification/use-notification-provider";
 import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
 import { dataProvider } from "./providers/data";
-import Dashboard from "./pages/dashboard";
-import { Layout } from "./components/refine-ui/layout/layout";
-import { Book, LayoutDashboard } from "lucide-react";
-import SubjectsList from "./pages/subjects/list";
-import SubjectsCreate from "./pages/subjects/create";
+import { resources, AppRoutes } from "./routes";
 
 function App() {
   return (
@@ -31,38 +27,9 @@ function App() {
               warnWhenUnsavedChanges: true,
               projectId: "Evic7K-HQFXfz-YVjEPJ",
             }}
-            // Sidebar menu items
-            resources={[
-              {
-                name: "dashboard",
-                list: "/",
-                meta: {
-                  label: "Dashboard",
-                  icon: <LayoutDashboard />,
-                },
-              },
-              {
-                name: "subjects",
-                list: "/subjects",
-                create: "/subjects/create",
-                meta: {
-                  label: "Subjects",
-                  icon: <Book />,
-                },
-              },
-            ]}>
-            <Routes>
-              <Route
-                element={
-                  <Layout>
-                    <Outlet />
-                  </Layout>
-                }>
-                <Route index element={<Dashboard />} />
-                <Route path="/subjects" element={<SubjectsList />} />
-                <Route path="subjects/create" element={<SubjectsCreate />} />
-              </Route>
-            </Routes>
+            resources={resources}
+          >
+            <AppRoutes />
             <Toaster />
             <RefineKbar />
             <UnsavedChangesNotifier />
