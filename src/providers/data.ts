@@ -1,20 +1,40 @@
-import { API_URL } from "@/constants";
-import { CreateResponse, ListResponse } from "@/types";
 import { createDataProvider, CreateDataProviderOptions } from "@refinedev/rest";
+
+import { CreateResponse, GetOneResponse, ListResponse } from "@/types";
+import { API_URL } from "@/constants";
 
 const options: CreateDataProviderOptions = {
   getList: {
     getEndpoint: ({ resource }) => resource,
 
     buildQueryParams: async ({ resource, pagination, filters }) => {
-      const page = pagination?.currentPage ?? 1;
-      const pageSize = pagination?.pageSize ?? 10;
+      const params: Record<string, string | number> = {};
 
-      const params: Record<string, string | number> = { page, limit: pageSize };
+      if (pagination?.mode !== "off") {
+        const page = pagination?.currentPage ?? 1;
+        const pageSize = pagination?.pageSize ?? 10;
+
+        params.page = page;
+        params.limit = pageSize;
+      }
 
       filters?.forEach((filter) => {
         const field = "field" in filter ? filter.field : "";
         const value = String(filter.value);
+
+        if (field === "role") {
+          params.role = value;
+        }
+
+        if (resource === "departments") {
+          if (field === "name" || field === "code") params.search = value;
+        }
+
+        if (resource === "users") {
+          if (field === "search" || field === "name" || field === "email") {
+            params.search = value;
+          }
+        }
 
         if (resource === "subjects") {
           if (field === "department") params.departmentName = value;
@@ -32,22 +52,33 @@ const options: CreateDataProviderOptions = {
     },
 
     mapResponse: async (response) => {
-      const payload: ListResponse = await response.clone().json();
-      return payload.data || [];
+      const payload: ListResponse = await response.json();
+      return payload.data ?? [];
     },
 
     getTotalCount: async (response) => {
-      const payload: ListResponse = await response.clone().json();
+      const payload: ListResponse = await response.json();
       return payload.pagination?.total ?? payload.data?.length ?? 0;
     },
   },
 
   create: {
     getEndpoint: ({ resource }) => resource,
+
     buildBodyParams: async ({ variables }) => variables,
+
     mapResponse: async (response) => {
       const json: CreateResponse = await response.json();
-      return json.data ?? [];
+      return json.data ?? {};
+    },
+  },
+
+  getOne: {
+    getEndpoint: ({ resource, id }) => `${resource}/${id}`,
+
+    mapResponse: async (response) => {
+      const json: GetOneResponse = await response.json();
+      return json.data ?? {};
     },
   },
 };
